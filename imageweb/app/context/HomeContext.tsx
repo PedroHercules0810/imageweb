@@ -1,6 +1,11 @@
 import { createContext, ReactNode, RefObject, useRef, useState } from "react";
 
+type imageData = {
+    src: string;
+}
+
 type HomeContextData = {
+    images: imageData[];
     upperText: string;
     lowerText: string;
     canvasRef: RefObject<HTMLCanvasElement>
@@ -19,6 +24,17 @@ const HomeContextProvider = ({children}: HomeContextProviderProps) => {
     const [upperText, setUpperText] = useState("");
     const [lowerText, setLowerText] = useState("");
     const canvasRef = useRef<HTMLCanvasElement>(null);
+    const [images, setImage] = useState<imageData[]>([]);
+
+    const onDrop = (selectedFiles: File[]) =>{
+        selectedFiles.map(file =>{
+            const reader = new FileReader();
+            reader.onload = (e) => {
+                const updateImages: imageData[] = [...images, {src: `${e.target?.result}`}];
+                setImage(updateImages);
+            }
+        });
+    }
 
     return(
         <HomeContext.Provider value ={{
@@ -26,7 +42,8 @@ const HomeContextProvider = ({children}: HomeContextProviderProps) => {
             lowerText,
             setUpperText,
             setLowerText,
-            canvasRef
+            canvasRef,
+            images
         }}/>
     )
 }
